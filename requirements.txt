@@ -1,0 +1,10 @@
+with st.expander("Ver información completa"):
+    st.markdown("**Requisitos específicos:**")
+
+    requisitos = str(row["requisitos"]).split(";")
+
+    for req in requisitos:
+        st.markdown(
+            f"<span class='req-badge'>{req.strip()}</span>",
+            unsafe_allow_html=True
+        )
