@@ -4,4 +4,4 @@ with st.expander("Ver información completa"):
     requisitos = str(row["requisitos"]).split(";")
 
     for req in requisitos:
-        st.info(req.strip())
+        st.write(f"• {req.strip()}")
