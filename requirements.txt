@@ -1,7 +1,2 @@
-with st.expander("Ver información completa"):
-    st.markdown("### Requisitos específicos")
-
-    requisitos = str(row["requisitos"]).split(";")
-
-    for req in requisitos:
-        st.write(f"• {req.strip()}")
+streamlit>=1.29
+pandas>=1.5
