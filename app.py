@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import streamlit.components.v1 as components
 
 # ===========================
 # CONFIGURACIÓN GENERAL
@@ -8,41 +9,6 @@ st.set_page_config(
     page_title="Catálogo de Asociaciones | Facultad de Psicología UADY",
     layout="wide"
 )
-
-# ===========================
-# ESTILOS
-# ===========================
-st.markdown("""
-<style>
-body {
-    background-color: #FFFFFF;
-}
-.card {
-    background-color: #FFFFFF;
-    border: 2px solid #0A2342;
-    border-radius: 14px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-.card h3 {
-    color: #0A2342;
-    margin-bottom: 10px;
-}
-.label {
-    font-weight: 600;
-    color: #0A2342;
-}
-.badge {
-    display: inline-block;
-    background-color: #F2B705;
-    color: #0A2342;
-    padding: 4px 12px;
-    border-radius: 18px;
-    font-size: 12px;
-    margin: 3px 6px 3px 0;
-}
-</style>
-""", unsafe_allow_html=True)
 
 # ===========================
 # TÍTULO
@@ -60,7 +26,7 @@ st.write("Buscador de asociaciones vinculadas al programa de voluntariado.")
 def load_data():
     url = "https://raw.githubusercontent.com/anamdza22/catalogoasociaciones/main/catalogo_asociaciones.csv"
     df = pd.read_csv(url, encoding="utf-8")
-    df.columns = df.columns.str.strip()  # Limpieza clave
+    df.columns = df.columns.str.strip()
     return df
 
 df = load_data()
@@ -74,27 +40,57 @@ if search:
     df = df[df["Nombre de la asociación"].str.contains(search, case=False, na=False)]
 
 # ===========================
-# MOSTRAR FICHAS
+# MOSTRAR FICHAS (HTML REAL)
 # ===========================
 for _, row in df.iterrows():
 
-    ods_lista = str(row["ODS relacionadas"]).split(",")
+    ods_html = ""
+    for ods in str(row["ODS relacionadas"]).split(","):
+        ods_html += f"<span class='badge'>{ods.strip()}</span>"
 
-    st.markdown(f"""
+    card_html = f"""
+    <style>
+        .card {{
+            background-color: #FFFFFF;
+            border: 2px solid #0A2342;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+            font-family: Arial, sans-serif;
+        }}
+        .card h3 {{
+            color: #0A2342;
+        }}
+        .label {{
+            font-weight: bold;
+            color: #0A2342;
+        }}
+        .badge {{
+            display: inline-block;
+            background-color: #F2B705;
+            color: #0A2342;
+            padding: 4px 12px;
+            border-radius: 18px;
+            font-size: 12px;
+            margin-right: 6px;
+        }}
+    </style>
+
     <div class="card">
         <h3>{row["Nombre de la asociación"]}</h3>
 
         <p><span class="label">Objetivo:</span><br>
         {row["Objetivo"]}</p>
 
-        <p><span class="label">ODS relacionadas:</span></p>
-        <p>
-            {"".join([f"<span class='badge'>{ods.strip()}</span>" for ods in ods_lista])}
-        </p>
+        <p><span class="label">ODS relacionadas:</span><br>
+        {ods_html}</p>
 
-        <p><span class="label">Cupos de voluntariado:</span> {row["Cupo para voluntariado"]}</p>
+        <p><span class="label">Cupos de voluntariado:</span>
+        {row["Cupo para voluntariado"]}</p>
     </div>
-    """, unsafe_allow_html=True)
+    """
+
+    components.html(card_html, height=260)
 
     with st.expander("📌 Ver información completa"):
         st.markdown(f"""
