@@ -51,12 +51,16 @@ st.markdown(
 st.write("Buscador de asociaciones vinculadas al programa de voluntariado.")
 
 # ---------------------------
-# CARGA DE DATOS (URL CORREGIDA)
+# CARGA DE DATOS (CON LIMPIEZA)
 # ---------------------------
 @st.cache_data
 def load_data():
     url = "https://raw.githubusercontent.com/anamdza22/catalogoasociaciones/main/catalogo_asociaciones.csv"
     df = pd.read_csv(url, encoding="utf-8")
+
+    # 🔑 LIMPIAR NOMBRES DE COLUMNAS
+    df.columns = df.columns.str.strip()
+
     return df
 
 df = load_data()
@@ -70,19 +74,21 @@ if search:
     df = df[df["Nombre de la asociación"].str.contains(search, case=False, na=False)]
 
 # ---------------------------
-# MOSTRAR ASOCIACIONES EN FICHAS
+# MOSTRAR ASOCIACIONES
 # ---------------------------
 for _, row in df.iterrows():
+
+    ods_lista = str(row["ODS relacionadas"]).split(",")
 
     st.markdown(f"""
     <div class="card">
         <h3>{row["Nombre de la asociación"]}</h3>
-        <p><span class="label">Objetivo:</span> {row["Objetivo "]}</p>
+
+        <p><span class="label">Objetivo:</span> {row["Objetivo"]}</p>
 
         <p><span class="label">ODS relacionadas:</span></p>
         <p>
-            {"".join([f"<span class='badge'>{ods.strip()}</span>" 
-            for ods in str(row["ODS relacionadas "]).split(",")])}
+            {"".join([f"<span class='badge'>{ods.strip()}</span>" for ods in ods_lista])}
         </p>
 
         <p><span class="label">Cupos de voluntariado:</span> {row["Cupo para voluntariado"]}</p>
@@ -101,7 +107,7 @@ for _, row in df.iterrows():
         {row["Contacto"]}
 
         **Días y horarios disponibles:**  
-        {row["Días y horarios disponibles "]}
+        {row["Días y horarios disponibles"]}
 
         **Requerimientos específicos:**  
         {row["Requerimientos específicos"]}
@@ -109,4 +115,3 @@ for _, row in df.iterrows():
         **Detalles adicionales:**  
         {row["Detalles"]}
         """)
-
