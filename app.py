@@ -10,13 +10,10 @@ st.set_page_config(
 )
 
 # ---------------------------
-# ESTILOS (CSS)
+# ESTILOS
 # ---------------------------
 st.markdown("""
 <style>
-body {
-    background-color: #FFFFFF;
-}
 .card {
     background-color: #FFFFFF;
     border: 2px solid #0A2342;
@@ -54,12 +51,13 @@ st.markdown(
 st.write("Buscador de asociaciones vinculadas al programa de voluntariado.")
 
 # ---------------------------
-# CARGA DE DATOS DESDE GITHUB
+# CARGA DE DATOS (URL CORREGIDA)
 # ---------------------------
 @st.cache_data
 def load_data():
-    url = "https://raw.githubusercontent.com/TU_USUARIO/TU_REPOSITORIO/main/catalogo_asociaciones.csv"
-    return pd.read_csv(url)
+    url = "https://raw.githubusercontent.com/anamdza22/catalogoasociaciones/main/catalogo_asociaciones.csv"
+    df = pd.read_csv(url, encoding="utf-8")
+    return df
 
 df = load_data()
 
@@ -69,41 +67,46 @@ df = load_data()
 search = st.text_input("🔍 Buscar asociación por nombre")
 
 if search:
-    df = df[df["nombre"].str.contains(search, case=False, na=False)]
+    df = df[df["Nombre de la asociación"].str.contains(search, case=False, na=False)]
 
 # ---------------------------
-# MOSTRAR ASOCIACIONES
+# MOSTRAR ASOCIACIONES EN FICHAS
 # ---------------------------
 for _, row in df.iterrows():
 
     st.markdown(f"""
     <div class="card">
-        <h3>{row["nombre"]}</h3>
-        <p><span class="label">Objetivo:</span> {row["objetivo"]}</p>
+        <h3>{row["Nombre de la asociación"]}</h3>
+        <p><span class="label">Objetivo:</span> {row["Objetivo "]}</p>
+
         <p><span class="label">ODS relacionadas:</span></p>
         <p>
-            {"".join([f"<span class='badge'>{ods.strip()}</span>" for ods in str(row["ods"]).split(",")])}
+            {"".join([f"<span class='badge'>{ods.strip()}</span>" 
+            for ods in str(row["ODS relacionadas "]).split(",")])}
         </p>
-        <p><span class="label">Cupos de voluntariado:</span> {row["cupos_voluntariado"]}</p>
+
+        <p><span class="label">Cupos de voluntariado:</span> {row["Cupo para voluntariado"]}</p>
     </div>
     """, unsafe_allow_html=True)
 
     with st.expander("📌 Ver información completa"):
-        st.markdown(
-            f"""
-            **Actividades posibles:**  
-            {row.get("actividades", "")}
+        st.markdown(f"""
+        **Actividades posibles:**  
+        {row["Actividades posibles"]}
 
-            **Persona supervisora:**  
-            {row.get("persona_supervisora", "")}
+        **Persona supervisora:**  
+        {row["Persona supervisora"]}
 
-            **Contacto:**  
-            {row.get("contacto", "")}
+        **Contacto:**  
+        {row["Contacto"]}
 
-            **Requisitos específicos:**  
-            {row.get("requisitos", "")}
+        **Días y horarios disponibles:**  
+        {row["Días y horarios disponibles "]}
 
-            **Detalles adicionales:**  
-            {row.get("detalles", "")}
-            """
-        )
+        **Requerimientos específicos:**  
+        {row["Requerimientos específicos"]}
+
+        **Detalles adicionales:**  
+        {row["Detalles"]}
+        """)
+
