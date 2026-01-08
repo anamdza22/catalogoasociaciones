@@ -72,34 +72,38 @@ if search:
     df = df[df["nombre"].str.contains(search, case=False, na=False)]
 
 # ---------------------------
-# MOSTRAR ASOCIACIONES EN FICHAS
+# MOSTRAR ASOCIACIONES
 # ---------------------------
-for idx, row in df.iterrows():
+for _, row in df.iterrows():
 
-    with st.container():
-        st.markdown(f"""
-        <div class="card">
-            <h3>{row['nombre']}</h3>
-            <p><span class="label">Objetivo:</span> {row['objetivo']}</p>
-            <p><span class="label">ODS relacionadas:</span></p>
-            <p>
-                {"".join([f"<span class='badge'>{ods.strip()}</span>" for ods in str(row['ods']).split(",")])}
-            </p>
-            <p><span class="label">Cupos de voluntariado:</span> {row['cupos_voluntariado']}</p>
-        </div>
-        """, unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="card">
+        <h3>{row["nombre"]}</h3>
+        <p><span class="label">Objetivo:</span> {row["objetivo"]}</p>
+        <p><span class="label">ODS relacionadas:</span></p>
+        <p>
+            {"".join([f"<span class='badge'>{ods.strip()}</span>" for ods in str(row["ods"]).split(",")])}
+        </p>
+        <p><span class="label">Cupos de voluntariado:</span> {row["cupos_voluntariado"]}</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-        with st.expander("📌 Ver información completa"):
-            st.markdown(f"""
+    with st.expander("📌 Ver información completa"):
+        st.markdown(
+            f"""
             **Actividades posibles:**  
-            {row['actividades']}
+            {row.get("actividades", "")}
 
             **Persona supervisora:**  
-            {row['persona_supervisora']}
+            {row.get("persona_supervisora", "")}
 
             **Contacto:**  
-            {row['contacto']}
+            {row.get("contacto", "")}
 
             **Requisitos específicos:**  
-            {row['requ]()
+            {row.get("requisitos", "")}
 
+            **Detalles adicionales:**  
+            {row.get("detalles", "")}
+            """
+        )
